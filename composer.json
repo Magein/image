@@ -1,0 +1,23 @@
+{
+  "name": "Magein/image",
+  "description": "图片处理类",
+  "type": "library",
+  "homepage": "https://github.com/Magein/image",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "xiaomage",
+      "email": "1154699897@qq.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Magein\\": "class/"
+    },
+    "files": [
+    ]
+  }
+}
