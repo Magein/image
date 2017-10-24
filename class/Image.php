@@ -1,6 +1,6 @@
 <?php
 
-namespace Magein\Image;
+namespace Magein;
 
 /**
  * Class Image
