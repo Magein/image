@@ -1,5 +1,7 @@
 <?php
 
+namespace Magein\Image;
+
 /**
  * Class Image
  */
@@ -20,6 +22,10 @@ class Image
      */
     public $background = '';
 
+    /**
+     * Image constructor.
+     * @param null|string|resource $image
+     */
     public function __construct($image = null)
     {
         if ($image) {
@@ -29,14 +35,14 @@ class Image
 
     /**
      * @return resource
-     * @throws Exception
+     * @throws \Exception
      */
     public function getResource()
     {
         if ($this->resource) {
             return $this->resource;
         } else {
-            throw new Exception('image resource is null');
+            throw new \Exception('image resource is null');
         }
     }
 
@@ -125,7 +131,6 @@ class Image
     /**
      * @param resource $resource
      * @param string $extend
-     * @throws Exception
      */
     public function output($resource = null, $extend = '')
     {
@@ -149,6 +154,39 @@ class Image
                 imagejpeg($resource);
                 break;
         }
+
+        imagedestroy($resource);
+
+        exit();
+    }
+
+    /**
+     * @param string $filename
+     * @param null $resource
+     * @param string $extend
+     */
+    public function save($filename, $resource = null, $extend = '')
+    {
+        $resource = $resource ? $resource : $this->getResource();
+
+        $extend = $extend ? $extend : $this->extend;
+
+        ob_clean();
+
+        switch ($extend) {
+            case 'png':
+                imagepng($resource, $filename);
+                break;
+            case 'gif':
+                imagegif($resource, $filename);
+                break;
+            default:
+                imagejpeg($resource, $filename);
+                break;
+        }
+
+        imagedestroy($resource);
+
         exit();
     }
 
@@ -213,6 +251,28 @@ class Image
         }
 
         return $this->resource;
+    }
+
+    /**
+     * 创建画布
+     * @param $width
+     * @param $height
+     * @param array $color
+     * @return resource
+     */
+    public function getCanvas($width, $height, $color = [])
+    {
+        $image = imagecreatetruecolor($width, $height);
+        imagesavealpha($image, true);
+        //拾取一个完全透明的颜色,最后一个参数127为全透明
+        $bg = imagecolorallocatealpha($image, 255, 255, 255, 127);
+        imagefill($image, 0, 0, $bg);
+
+        // 设置背景色
+        $color = imagecolorallocate($image, isset($color[0]) ? $color[0] : 255, isset($color[1]) ? $color[1] : 255, isset($color[2]) ? $color[2] : 255);
+        imagefilledrectangle($image, 0, 0, $width, $height, $color);
+
+        return $image;
     }
 
     /**
