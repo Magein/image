@@ -6,7 +6,7 @@
 class Image
 {
     // 图片扩展
-    private $ext = '';
+    private $extend = '';
 
     /**
      * 图片资源
@@ -42,23 +42,23 @@ class Image
 
     /**
      * 获取图片资源
-     * @param $image
-     * @param string $ext
+     * @param string $image 图片资源，可以是图片字符串资源，http，https，图片路径（绝对地址或者物理地址）
+     * @param string $extend 图片的扩展
      * @return resource
      */
-    public function transImageResource($image, $ext = '')
+    public function transImageResource($image, $extend = '')
     {
         if (is_resource($image)) {
             return $image;
         }
 
-        if ($ext) {
-            $this->ext = $ext;
+        if ($extend) {
+            $this->extend = $extend;
         } else {
-            $this->ext = strtolower(pathinfo($image, PATHINFO_EXTENSION));
+            $this->extend = strtolower(pathinfo($image, PATHINFO_EXTENSION));
         }
 
-        switch ($this->ext) {
+        switch ($this->extend) {
             case 'png':
                 $this->resource = imagecreatefrompng($image);
                 break;
@@ -68,6 +68,15 @@ class Image
                 break;
             case 'gif':
                 $this->resource = imagecreatefromgif($image);
+                break;
+            case 'string':
+                $this->resource = imagecreatefromstring($image);
+                break;
+            case 'http':
+                $this->resource = imagecreatefromstring(file_get_contents($image));
+                break;
+            case 'https':
+                $this->resource = imagecreatefromstring($this->curl($image));
                 break;
             default:
                 $this->resource = $this->transRemoteImage($image);
@@ -87,7 +96,7 @@ class Image
         if (preg_match('/^http:/', $imageUrl)) {
             $resource = imagecreatefromstring(file_get_contents($imageUrl));
         } elseif (preg_match('/^https:/', $imageUrl)) {
-            $resource = imagecreatefromstring(curl($imageUrl));
+            $resource = imagecreatefromstring($this->curl($imageUrl));
         } else {
             $resource = imagecreatefromstring($imageUrl);
         }
@@ -95,19 +104,38 @@ class Image
         return $resource;
     }
 
+    /**
+     * @param $imageUrl
+     * @return mixed
+     */
+    private function curl($imageUrl)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $imageUrl);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    }
+
 
     /**
      * @param resource $resource
-     * @param string $ext
+     * @param string $extend
      * @throws Exception
      */
-    public function output($resource = null, $ext = '')
+    public function output($resource = null, $extend = '')
     {
         $resource = $resource ? $resource : $this->getResource();
 
+        $extend = $extend ? $extend : $this->extend;
+
         ob_clean();
 
-        switch ($ext) {
+        switch ($extend) {
             case 'png':
                 header('Content-type:image/png');
                 imagepng($resource);
