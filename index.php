@@ -4,29 +4,18 @@ error_reporting(7);
 
 spl_autoload_register(function () {
     require_once './class/Image.php';
+    require_once './phrase/Phrase.php';
 });
 
-/**
- *
- * 微信头像：https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83er8oAjzMKR34dHHICzJ0bzSRibp1lb9J1ynVM9ckibkUMTZe8Jco9Kou0LYpKUxTCyqclpSIL18NVaA/0
- *
- * 远程连接可以直接使用 imagecreatefromjpeg 得到 resource 类型的值 imagecreatefrompng获取不到,想要获取链接中输出的图片类型
- *
- * 可以使用curl请求，然后打印出头信息 查看 Content-Type: xxx的值
- *   打印头信息：curl_setopt($ch, CURLOPT_HEADER, false);
- *
- * 如果使用imagecreatefromstring 需要得到 图片字符串才能转化
- *  https://  可以使用curl去获取（https需要证书验证，使用file_get_contents报错的话，可以直接用curl跳过证书验证）
- *  http://   可以用file_get_contents获取图片字符串
- *
- * 请求微信二维码返回的字符串类型需要用 imagecreatefromstring 去转化成 resource类型的值
- *
- */
+$instance = new \Magein\phrase\Phrase();
 
-use Magein\Image;
+$head = './static/image/head.png';
+$qrcode = './static/image/qrcode.png';
+$number = 10;
 
-$head = 'https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83er8oAjzMKR34dHHICzJ0bzSRibp1lb9J1ynVM9ckibkUMTZe8Jco9Kou0LYpKUxTCyqclpSIL18NVaA/0';
-$image = new Image($head);
-$image->thumb();
-$image->circle();
-$image->output();
+if (isset($_GET['pay'])) {
+    $instance->paySuccess($head, $number, '马到成功', $qrcode);
+} else {
+    $instance->answerSuccess($head, $qrcode, ['马到成功', '功成名就', '就事论事'], '萨迪as飞机开始了的念佛迪士尼', '掉撒福建省带你飞登录时间');
+}
+
