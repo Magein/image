@@ -8,13 +8,13 @@ namespace Magein;
 class Image
 {
     // 图片扩展
-    private $extend = '';
+    protected $extend = '';
 
     /**
      * 图片资源
      * @var resource
      */
-    private $resource = '';
+    protected $resource = '';
 
     /**
      * 图片合成的背景
