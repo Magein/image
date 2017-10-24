@@ -2,8 +2,8 @@
 
 error_reporting(7);
 
-spl_autoload_register(function ($class) {
-    require_once './class/' . $class . '.php';
+spl_autoload_register(function () {
+    require_once './class/Image.php';
 });
 
 /**
@@ -22,6 +22,8 @@ spl_autoload_register(function ($class) {
  * 请求微信二维码返回的字符串类型需要用 imagecreatefromstring 去转化成 resource类型的值
  *
  */
+
+use Magein\Image;
 
 $head = 'https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83er8oAjzMKR34dHHICzJ0bzSRibp1lb9J1ynVM9ckibkUMTZe8Jco9Kou0LYpKUxTCyqclpSIL18NVaA/0';
 $image = new Image($head);

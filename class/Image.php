@@ -1,5 +1,7 @@
 <?php
 
+namespace Magein;
+
 /**
  * Class Image
  */
