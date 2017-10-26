@@ -16,6 +16,10 @@ class Image
      */
     protected $resource = '';
 
+    private $image = null;
+
+    public $closeError = true;
+
     /**
      * 图片合成的背景
      * @var string|resource
@@ -40,10 +44,18 @@ class Image
     public function getResource()
     {
         if ($this->resource) {
+
             return $this->resource;
+
         } else {
-            throw new \Exception('image resource is null');
+
+            if (!$this->closeError) {
+                throw new \Exception('image resource is null! input image value ' . $this->image);
+            }
+
         }
+
+        return null;
     }
 
     /**
@@ -54,6 +66,8 @@ class Image
      */
     public function transImageResource($image, $extend = '')
     {
+        $this->image = $image;
+
         if (is_resource($image)) {
             return $image;
         }
@@ -95,19 +109,23 @@ class Image
     /**
      * 转化远程图片
      * @param $imageUrl
-     * @return resource
+     * @return null|resource
      */
     private function transRemoteImage($imageUrl)
     {
         if (preg_match('/^http:/', $imageUrl)) {
-            $resource = imagecreatefromstring(file_get_contents($imageUrl));
+            $image = file_get_contents($imageUrl);
         } elseif (preg_match('/^https:/', $imageUrl)) {
-            $resource = imagecreatefromstring($this->curl($imageUrl));
+            $image = $this->curl($imageUrl);
         } else {
-            $resource = imagecreatefromstring($imageUrl);
+            $image = $imageUrl;
         }
 
-        return $resource;
+        if ($image) {
+            return imagecreatefromstring($image);
+        }
+
+        return null;
     }
 
     /**
