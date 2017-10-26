@@ -1,6 +1,6 @@
 {
   "name": "magein/image",
-  "description": "图片处理类",
+  "description": "图片处理",
   "type": "library",
   "homepage": "https://github.com/Magein/image",
   "license": "Apache-2.0",
@@ -15,9 +15,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Magein\\": "class/"
+      "Magein\\image": "library/"
     },
-    "files": [
-    ]
+    "files": []
   }
 }
