@@ -1,71 +1,37 @@
-### 图片处理类
-    1. 生成略缩图
-    2. 圆形处理
-    3. 获取图片resource类型资源
-    
-### 获取图片资源
+### 说明
+     
+     1. 文件编码遵循 psr-4 规范
+     2. 支持本地，远程，字符串图片转化成系统可操作的resource变量类型
+     3. 支持略缩图，圆形处理
+     4. 调用对应的函数可输出到浏览器，可保存(保存到远程服务器请自行配置)
+     5. 图片格式仅包含png,jpg,jpeg,gif（远程图片，图片字符串任意类型）
+     
+### 使用
+     
+     请阅读DOCUMENT.md
+     
+### 依赖
 
-     可以将http、https、物理路径、图片字符串类型的图片源转化成resource类型。 
+    1. php >= 5.5 
+    2. gd库
+    3. 远程https图片资源，需支持curl或者openssl        
      
-    
-     使用gd库操作图片大部分需要使用resource类型的图片源。 
-       
-     1. 构造函数
-        $imageUrl='';
-        $image=new Image($imageUrl);
-        $image->getResource();
-        
-     2. transImageResource方法
-        $image->transImageResource();
-        
-### 远程图片处理
-     远程图片处理： 
-        1. 处理http://xxx.com/xx.ext或者https://xxx.com/xx.ext
-            ext可以是png、jpg、gif等明确的文件格式
-            直接使用imagecreatefrompng()等函数处理
-            
-        2. 处理http:/xxx.com/xxx或者https://xxx.com/xx
-            没有指明文件格式的，可以使用php的curl请求，打印头编码查看Content-type:xx 的类型
-        
-        3. 处理图片字符串可以使用imagecreatefromstring
-        
-### 合成文字
-    注意：imagefttext中字体的大小使用的是磅值（point）
-     
-    1. 创建画布,大小100px*100px
-        $canvas=$image->getCanvas(100,100);
-        
-    2. 创建文字
-        $textResource=imagefttext($canvas,24,0,40,40,'字体文件路径','马到成功');
-    
-### 合成图片    
-    imagecopy($dst_resource,$src_resource,$dst_x,$dst_y,$src_x,$src_y,$src_w,$src_y);
-    
-    将图片处理成resource类型使用imagecopy函数处理即可
-    
-### 图片输出或保存
+### 建议
 
-    调用$image->output()输出
-    调用$image->save()保存
+    在转化远程图片时，imagecreatefromjpeg等方法支持直接转化，https协议下，需要环境支持openssl
      
-    配合header输出到浏览器
-     header('Content-type:image/png')
-     imagepng($resource);
+    linux系统下，开始openssl后出现证书等验证失败，可以使用curl获取到图片资源，
      
-    保存图片
-     imagepng($resource,$filename);
+    然后使用imagecreatefromstring进行转化，  
      
-    保存图片大小
-     imagepng($resource,$filename,20);
-     第三个参数是图片的质量，数字越大，保真度越高，对应的文件越大
+    所以可根据实际情况友好的选择使用$image->transImageResource()
+     
+    第二个参数得到可操作的resource类型图片   
+    
+### 小技巧
+   
+    查看远程图片的类型，可以使用curl打印出头信息，查看Content-type:xx的值
+     
+    如：Content-type:image/png ,Content-type:image/jpeg等
         
-### 注意释放内存
-    
-    输出，保存后记得释放内存
-    
-    imagedestroy($resource);     
-    
-    
-                
-        
-    
+     
