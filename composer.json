@@ -15,7 +15,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Magein\\image": "library/"
+      "Magein\\image\\": "library/"
     },
     "files": []
   }
