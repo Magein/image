@@ -21,6 +21,7 @@ spl_autoload_register(function () {
  *
  * 请求微信二维码返回的字符串类型需要用 imagecreatefromstring 去转化成 resource类型的值
  *
+ *
  */
 
 use Magein\image\Image;
