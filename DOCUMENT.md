@@ -4,10 +4,8 @@
     3. 获取图片resource类型资源
     
 ### 获取图片资源
-
      可以将http、https、物理路径、图片字符串类型的图片源转化成resource类型。 
-     
-    
+      
      使用gd库操作图片大部分需要使用resource类型的图片源。 
        
      1. 构造函数
@@ -46,7 +44,6 @@
     将图片处理成resource类型使用imagecopy函数处理即可
     
 ### 图片输出或保存
-
     调用$image->output()输出
     调用$image->save()保存
      
