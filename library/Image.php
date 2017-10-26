@@ -288,6 +288,4 @@ class Image
 
         return $this->background;
     }
-
-
 }
