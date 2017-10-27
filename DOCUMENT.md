@@ -62,7 +62,15 @@
     
     输出，保存后记得释放内存
     
-    imagedestroy($resource);     
+    imagedestroy($resource);    
+    
+### 调试
+    
+    在将图片资源转化resource类型的时候，可能会出现失败的情况，返回null
+     
+    如果在使用中需要输出失败的信息，可以
+    $image->$closeError=false;
+    设置后，返回null的时候会抛出异常，默认关闭     
     
     
                 
