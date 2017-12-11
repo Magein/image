@@ -24,7 +24,7 @@ spl_autoload_register(function () {
  *
  */
 
-use Magein\image\Image;
+use Magein\image\library\Image;
 
 $head = 'https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83er8oAjzMKR34dHHICzJ0bzSRibp1lb9J1ynVM9ckibkUMTZe8Jco9Kou0LYpKUxTCyqclpSIL18NVaA/0';
 $image = new Image($head);
