@@ -17,7 +17,7 @@ class Image
      * Image constructor.
      * @param $image
      */
-    public function __construct($image)
+    public function __construct($image = null)
     {
         $this->init($image);
     }
@@ -27,7 +27,7 @@ class Image
      */
     public function init($image)
     {
-        if (!is_resource($image)) {
+        if ($image !== null && !is_resource($image)) {
             $image = Resources::instance()->get($image);
         }
 
