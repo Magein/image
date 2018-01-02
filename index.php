@@ -2,8 +2,9 @@
 
 error_reporting(7);
 
-spl_autoload_register(function () {
-    require_once './library/image.php';
+spl_autoload_register(function ($class) {
+    $filename = './library/' . end(explode('\\', $class)) . '.php';
+    require_once $filename;
 });
 
 /**
@@ -25,9 +26,24 @@ spl_autoload_register(function () {
  */
 
 use Magein\image\library\Image;
+use \Magein\image\library\Resources;
+
+$fontFile = './static/font/msyhbd.ttc';
+$fontFile = './static/font/msyh.ttc';
+$string = 'magein';
+$size = 30;
+$canvas = Resources::instance()->createText($string, $size, $fontFile, [220, 220, 255]);
+
+//var_dump($canvas);
+//die();
 
 $head = 'https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83er8oAjzMKR34dHHICzJ0bzSRibp1lb9J1ynVM9ckibkUMTZe8Jco9Kou0LYpKUxTCyqclpSIL18NVaA/0';
+$head = './static/image/timg.jpg';
 $image = new Image($head);
-$image->thumb();
-$image->circle();
+//$image->save('./test.jpg', 'jpg', 10);
+//$image->cut(0, 0, 300, 300);
+//$image->thumb();
+//$image->circle();
+//$image->water('./static/image/magein.png', 500, 600);
+//$image->water($canvas);
 $image->output();

@@ -7,222 +7,111 @@ namespace Magein\image\library;
  */
 class Image
 {
-    // 图片扩展
-    protected $extend = '';
-
     /**
      * 图片资源
      * @var resource
      */
-    protected $resource = '';
-
-    private $image = null;
-
-    public $closeError = true;
-
-    /**
-     * 图片合成的背景
-     * @var string|resource
-     */
-    public $background = '';
+    protected $resource = null;
 
     /**
      * Image constructor.
-     * @param null|string|resource $image
+     * @param $image
      */
-    public function __construct($image = null)
+    public function __construct($image)
     {
-        if ($image) {
-            $this->transImageResource($image);
+        $this->init($image);
+    }
+
+    /**
+     * @param $image
+     */
+    public function init($image)
+    {
+        if (!is_resource($image)) {
+            $image = Resources::instance()->get($image);
         }
+
+        $this->resource = $image;
     }
 
     /**
      * @return resource
-     * @throws \Exception
      */
-    public function getResource()
+    public function get()
     {
-        if ($this->resource) {
-
-            return $this->resource;
-
-        } else {
-
-            if (!$this->closeError) {
-                throw new \Exception('image resource is null! input image value ' . $this->image);
-            }
-
-        }
-
-        return null;
-    }
-
-    /**
-     * 获取图片资源
-     * @param string $image 图片资源，可以是图片字符串资源，http，https，图片路径（绝对地址或者物理地址）
-     * @param string $extend 图片的扩展
-     * @return resource
-     */
-    public function transImageResource($image, $extend = '')
-    {
-        $this->image = $image;
-
-        if (is_resource($image)) {
-            return $image;
-        }
-
-        if ($extend) {
-            $this->extend = $extend;
-        } else {
-            $this->extend = strtolower(pathinfo($image, PATHINFO_EXTENSION));
-        }
-
-        switch ($this->extend) {
-            case 'png':
-                $this->resource = imagecreatefrompng($image);
-                break;
-            case 'jpg':
-            case 'jpeg':
-                $this->resource = imagecreatefromjpeg($image);
-                break;
-            case 'gif':
-                $this->resource = imagecreatefromgif($image);
-                break;
-            case 'string':
-                $this->resource = imagecreatefromstring($image);
-                break;
-            case 'http':
-                $this->resource = imagecreatefromstring(file_get_contents($image));
-                break;
-            case 'https':
-                $this->resource = imagecreatefromstring($this->curl($image));
-                break;
-            default:
-                $this->resource = $this->transRemoteImage($image);
-                break;
-        }
-
         return $this->resource;
     }
 
     /**
-     * 转化远程图片
-     * @param $imageUrl
-     * @return null|resource
+     * @param null $extend
      */
-    private function transRemoteImage($imageUrl)
+    public function output($extend = null)
     {
-        if (preg_match('/^http:/', $imageUrl)) {
-            $image = file_get_contents($imageUrl);
-        } elseif (preg_match('/^https:/', $imageUrl)) {
-            $image = $this->curl($imageUrl);
-        } else {
-            $image = $imageUrl;
-        }
-
-        if ($image) {
-            return imagecreatefromstring($image);
-        }
-
-        return null;
-    }
-
-    /**
-     * @param $imageUrl
-     * @return mixed
-     */
-    private function curl($imageUrl)
-    {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $imageUrl);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        $data = curl_exec($ch);
-        curl_close($ch);
-        return $data;
-    }
-
-
-    /**
-     * @param resource $resource
-     * @param string $extend
-     */
-    public function output($resource = null, $extend = '')
-    {
-        $resource = $resource ? $resource : $this->getResource();
-
-        $extend = $extend ? $extend : $this->extend;
-
         ob_clean();
 
         switch ($extend) {
             case 'png':
                 header('Content-type:image/png');
-                imagepng($resource);
+                imagepng($this->resource);
                 break;
             case 'gif':
                 header('Content-type:image/gif');
-                imagegif($resource);
+                imagegif($this->resource);
                 break;
             default:
                 header('Content-type:image/jpeg');
-                imagejpeg($resource);
+                imagejpeg($this->resource);
                 break;
         }
 
-        imagedestroy($resource);
+        imagedestroy($this->resource);
 
         exit();
     }
 
     /**
-     * @param string $filename
-     * @param null $resource
-     * @param string $extend
+     * @param $filename
+     * @param null $extend
+     * @param int $quality
+     * @return bool
      */
-    public function save($filename, $resource = null, $extend = '')
+    public function save($filename, $extend = null, $quality = 100)
     {
-        $resource = $resource ? $resource : $this->getResource();
-
-        $extend = $extend ? $extend : $this->extend;
-
         ob_clean();
 
         switch ($extend) {
             case 'png':
-                imagepng($resource, $filename);
+                imagepng($this->resource, $filename, $quality);
                 break;
             case 'gif':
-                imagegif($resource, $filename);
+                imagegif($this->resource, $filename);
                 break;
             default:
-                imagejpeg($resource, $filename);
+                imagejpeg($this->resource, $filename, $quality);
                 break;
         }
 
-        imagedestroy($resource);
+        imagedestroy($this->resource);
 
-        exit();
+        if (is_file($filename)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
-     * @param resource $resource
+     * 略缩图
      * @param int $width
-     * @param int|null $height
+     * @param null $height
      * @return resource
      */
-    public function thumb($resource = null, $width = 100, $height = null)
+    public function thumb($width = 100, $height = null)
     {
-        $resource = $resource ? $resource : $this->getResource();
+        $resource_width = imagesx($this->resource);
+        $resource_height = imagesy($this->resource);
 
-        //取得源图片的宽度和高度
-        $resource_width = imagesx($resource);
-        $resource_height = imagesy($resource);
-
-        //根据最大值为300，算出另一个边的长度，得到缩放后的图片宽度和高度
+        //算出另一个边的长度，得到缩放后的图片宽度和高度
         if ($resource_width > $resource_height) {
             $image_width = $width;
             $image_height = $height ? $height : $resource_height * ($width / $resource_width);
@@ -231,79 +120,94 @@ class Image
             $image_width = $height ? $height : $resource_width * ($width / $resource_height);
         }
 
-        $this->resource = imagecreatetruecolor($image_width, $image_height);
+        // 缩放后的大小
+        $resource = imagecreatetruecolor($image_width, $image_height);
 
-        //关键函数，参数（目标资源，源，目标资源的开始坐标x,y, 源资源的开始坐标x,y,目标资源的宽高w,h,源资源的宽高w,h）
-        imagecopyresampled($this->resource, $resource, 0, 0, 0, 0, $image_width, $image_height, $resource_width, $resource_height);
+        //目标资源，源，目标资源的开始坐标x,y, 源资源的开始坐标x,y,目标资源的宽高w,h,源资源的宽高w,h
+        imagecopyresampled($resource, $this->resource, 0, 0, 0, 0, $image_width, $image_height, $resource_width, $resource_height);
 
-        return $this->resource;
+        return $this->resource = $resource;
     }
 
     /**
-     * @param resource $resource
+     * 裁剪
+     * @param int $x
+     * @param int $y
+     * @param int $width
+     * @param int $height
      * @return resource
      */
-    public function circle($resource = null)
+    public function cut($x = 0, $y = 0, $width = 100, $height = 100)
     {
-        $resource = $resource ? $resource : $this->getResource();
+        $canvas = imagecrop($this->resource, ['x' => $x, 'y' => $y, 'width' => $width, 'height' => $height]);
 
-        $width = imagesx($resource);
-        $height = imagesy($resource);
+        return $this->resource = $canvas;
+    }
+
+    /**
+     * 圆形处理
+     * @return resource
+     */
+    public function circle()
+    {
+        // 获取图片的大小
+        $width = imagesx($this->resource);
+        $height = imagesy($this->resource);
         $width = min($width, $height);
         $height = $width;
-        $this->resource = imagecreatetruecolor($width, $height);
-        //这一句一定要有
-        imagesavealpha($this->resource, true);
-        //拾取一个完全透明的颜色,最后一个参数127为全透明
-        $bg = imagecolorallocatealpha($this->resource, 255, 255, 255, 127);
-        imagefill($this->resource, 0, 0, $bg);
 
+        // 创建一个全透明的背景图
+        $resource = Resources::instance()->create($width, $height);
+
+        // 将源图片的中的每一个像素取出来填充到创建的图片中（在圆半径内）
         $r = $width / 2; //圆半径
         for ($x = 0; $x < $width; $x++) {
             for ($y = 0; $y < $height; $y++) {
-                $rgbColor = imagecolorat($resource, $x, $y);
+                $rgbColor = imagecolorat($this->resource, $x, $y);
                 if (((($x - $r) * ($x - $r) + ($y - $r) * ($y - $r)) < ($r * $r))) {
-                    imagesetpixel($this->resource, $x, $y, $rgbColor);
+                    imagesetpixel($resource, $x, $y, $rgbColor);
                 }
             }
         }
 
+        $this->resource = $resource;
+
         return $this->resource;
     }
 
     /**
-     * 创建画布
-     * @param $width
-     * @param $height
-     * @param array $color
+     * 添加水印
+     * @param $image
+     * @param string $x
+     * @param string $y
      * @return resource
      */
-    public function getCanvas($width, $height, $color = [])
+    public function water($image, $x = '100%', $y = '100%')
     {
-        $image = imagecreatetruecolor($width, $height);
-        imagesavealpha($image, true);
-        //拾取一个完全透明的颜色,最后一个参数127为全透明
-        $bg = imagecolorallocatealpha($image, 255, 255, 255, 127);
-        imagefill($image, 0, 0, $bg);
+        if (!is_resource($image)) {
+            $image = Resources::instance()->get($image);
+        }
 
-        // 设置背景色
-        $color = imagecolorallocate($image, isset($color[0]) ? $color[0] : 255, isset($color[1]) ? $color[1] : 255, isset($color[2]) ? $color[2] : 255);
-        imagefilledrectangle($image, 0, 0, $width, $height, $color);
+        $resourceWidth = imagesx($this->resource);
+        $resourceHeight = imagesy($this->resource);
 
-        return $image;
-    }
+        $imageWidth = imagesx($image);
+        $imageHeight = imagesy($image);
 
-    /**
-     * 合成图片，在实例化的时候可以把背景图片传入到构造函数中
-     * @param resource $src_resource
-     * @param $dst_x
-     * @param $dst_y
-     * @return mixed
-     */
-    public function imageCopy($src_resource, $dst_x, $dst_y)
-    {
-        imagecopy($this->background, $src_resource, $dst_x, $dst_y, 0, 0, imagesx($src_resource), imagesy($src_resource));
+        if (!is_int($x) && !is_int($y)) {
 
-        return $this->background;
+            $x = intval($x);
+            $y = intval($y);
+
+            $x = $x > 100 ? 100 : $x;
+            $y = $y > 100 ? 100 : $x;
+
+            $x = $resourceWidth * ($x / 100) - $imageWidth;
+            $y = $resourceHeight * ($y / 100) - $imageHeight;
+        }
+
+        imagecopy($this->resource, $image, $x, $y, 0, 0, $imageWidth, $imageHeight);
+
+        return $this->resource;
     }
 }

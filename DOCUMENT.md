@@ -1,20 +1,25 @@
 ### 图片可进行处理项
+
     1. 生成略缩图
     2. 圆形处理
     3. 获取图片resource类型资源
+    4. 裁剪
+    5. 水印
+    6. 压缩
     
 ### 获取图片资源
+
      可以将http、https、物理路径、图片字符串类型的图片源转化成resource类型。 
       
      使用gd库操作图片大部分需要使用resource类型的图片源。 
        
-     1. 构造函数
+     1. Image类
         $imageUrl='';
         $image=new Image($imageUrl);
-        $image->getResource();
+        $image->get();
         
-     2. transImageResource方法
-        $image->transImageResource();
+     2. Resources类
+        Resources::instance()->get($imageUrl);
         
         第二个参数可以指定使用的文件格式，如png，string，https等
         
@@ -33,10 +38,11 @@
     注意：imagefttext中字体的大小使用的是磅值（point）
      
     1. 创建画布,大小100px*100px
-        $canvas=$image->getCanvas(100,100);
+    
+        $canvas=Resources::instance()->create(100,100);
         
     2. 创建文字
-        $textResource=imagefttext($canvas,24,0,40,40,'字体文件路径','马到成功');
+        $canvas=Resources::instance()->createText($string, $size, $fontFile, [220, 220, 255]);
     
 ### 合成图片    
     imagecopy($dst_resource,$src_resource,$dst_x,$dst_y,$src_x,$src_y,$src_w,$src_y);
