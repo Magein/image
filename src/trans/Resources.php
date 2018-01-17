@@ -3,7 +3,8 @@
 namespace magein\trans;
 
 /**
- * 转化、创建图片资源类型
+ * 创建图片资源类型
+ * 转化图片资源类型
  * Class IResource
  * @package Magein
  */
