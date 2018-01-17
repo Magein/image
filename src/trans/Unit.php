@@ -1,13 +1,16 @@
 <?php
 
 namespace magein\trans;
-
 /**
- * GD1 版本中使用像素
- * GD2 版本中使用磅值
- * 两者之间暂时没有提供具体的函数去转化，此处的值可能不是很准确，只是一个大概值
- * Class IPoint
- * @package Magein
+ *
+ * 处理图片单位像素和磅值之间的转化
+ *
+ *  GD1 版本中使用像素
+ *  GD2 版本中使用磅值
+ *  两者之间暂时没有提供具体的函数去转化，此处的值可能不是很准确，只是接近于平衡值
+ *
+ * Class Unit
+ * @package magein\trans
  */
 class Unit
 {
