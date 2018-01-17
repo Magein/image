@@ -6,7 +6,7 @@ use magein\trans\Resources;
 
 /**
  * Class Image
- * @package Magein
+ * @package magein
  */
 class Image
 {
