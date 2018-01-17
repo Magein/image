@@ -1,9 +1,12 @@
 <?php
 
-namespace Magein\image\library;
+namespace magein;
+
+use magein\trans\Resources;
 
 /**
  * Class Image
+ * @package Magein
  */
 class Image
 {

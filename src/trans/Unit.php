@@ -1,15 +1,15 @@
 <?php
 
-namespace Magein\image\library;
+namespace magein\trans;
 
 /**
  * GD1 版本中使用像素
  * GD2 版本中使用磅值
  * 两者之间暂时没有提供具体的函数去转化，此处的值可能不是很准确，只是一个大概值
- * Class Point
- * @package Magein\image\library
+ * Class IPoint
+ * @package Magein
  */
-class Point
+class Unit
 {
     /**
      * key== point值

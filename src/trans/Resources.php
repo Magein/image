@@ -1,10 +1,11 @@
 <?php
 
-namespace Magein\image\library;
+namespace magein\trans;
 
 /**
- * Class Resources
- * @package Magein\image\library
+ * 转化、创建图片资源类型
+ * Class IResource
+ * @package Magein
  */
 class Resources
 {
@@ -140,7 +141,7 @@ class Resources
     {
         // 像素转化为磅值
         if (GD_VERSION > '2') {
-            $size = Point::transPixelSizeToPoint($size);
+            $size = Unit::transPixelSizeToPoint($size);
         }
 
         $box = imagettfbbox($size, 0, $fontFile, $string);
