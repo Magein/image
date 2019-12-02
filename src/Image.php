@@ -27,11 +27,12 @@ class Image
 
     /**
      * @param $image
+     * @param $extend
      */
-    public function init($image)
+    public function init($image, $extend = null)
     {
         if ($image !== null && !is_resource($image)) {
-            $image = Resources::instance()->get($image);
+            $image = Resources::instance()->get($image, $extend);
         }
 
         $this->resource = $image;
